@@ -62,7 +62,7 @@ func main() {
 	flag.Parse()
 	s := make(chan recieveMessage, 1)
 	if len(services) == 0 || *sendIPAddr == "" || *listenIPAddr == "" {
-		log.Fatalln("services,listening address and destination address must not be empty")
+		log.Println("services,listening address and destination address must not be empty")
 		os.Exit(1)
 	}
 	previousStatus := false
@@ -154,7 +154,7 @@ func sendMsg(sendAddr *net.UDPAddr, msg sendMessage) {
 func receiveMsg(c1 chan recieveMessage, addr *net.UDPAddr, ief *net.Interface) {
 	l, err := net.ListenUDP("udp", addr)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		os.Exit(1)
 	} else {
 		log.Println("listening at", addr)
@@ -178,7 +178,7 @@ func receiveMsg(c1 chan recieveMessage, addr *net.UDPAddr, ief *net.Interface) {
 func checkStatus(self sendMessage, peer recieveMessage) (bool, bool) {
 	//check whether received message is valid
 	if peer.Body.Instance == 0 || peer.Body.Priority == 0 || peer.Body.Services == nil {
-		log.Fatalln("message recieved from peer addr", *peer.ipAddr, "but neccesary parameters are missing")
+		log.Println("message recieved from peer addr", *peer.ipAddr, "but neccesary parameters are missing")
 		return false, true
 	}
 	if peer.Body.Instance == self.Instance {
@@ -199,7 +199,7 @@ func toggleService(self sendMessage, toggle bool) {
 			cmd := exec.Command("systemctl", "stop", self.Services[i])
 			_, err := cmd.CombinedOutput()
 			if err != nil {
-				log.Fatal(err)
+				log.Println(err)
 			}
 		}
 	} else {
