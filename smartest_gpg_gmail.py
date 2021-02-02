@@ -2,7 +2,7 @@
 
 # The Purpose of this script is to periodically run smart health check and send email that is gpg encrypted to alert users if disks have failed
 # Prerequisites: Linux only, required to install smartmontools, python-gnupg(installed globally via sudo -H pip3 install python-gnupg), run this script as root
-# How to use: place it in /etc/cron.daily/  &&  chmod +x <script name>
+# How to use: place it in /etc/cron.daily/ && remember to remove .py extension, otherwise run-parts wouldn't run the script  &&  chmod +x <script name>
 import smtplib
 import ssl
 import gnupg
