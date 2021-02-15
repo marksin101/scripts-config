@@ -1,0 +1,18 @@
+#Init Wine 
+WINEPREFIX="$HOME/win_applications/acrobat" WINEARCH=win32 wine wineboot
+
+#Install prefix
+WINEPREFIX="$HOME/win_applications/acrobat" WINEARCH=win32 winetricks atmlib wsh57 mspatcha
+
+#Install fonts
+Download Win7fonts from https://www.w7df.com/7/download.html
+
+cp font to /usr/share/fonts
+sudo fc-cache -vf
+
+
+#Run the exe
+WINEPREFIX="$HOME/win_applications/acrobat" WINEARCH=win32 wine Setup.exe
+
+#Change riched20 from native to builtin so that dialog box would show up 
+WINEPREFIX="$HOME/win_applications/acrobat" WINEARCH=win32 winecfg
