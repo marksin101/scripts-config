@@ -1,0 +1,7 @@
+#how to fix screen tearing on tigherlake intel laptop with X11 ubuntu 20.04
+
+#Paste the following to /etc/X11/xorg.conf/20-intel.conf
+Section "Device"
+    Identifier "Intel Graphics"
+    Driver "modesetting"
+EndSection
