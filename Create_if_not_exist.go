@@ -3,6 +3,7 @@
 // Usage: compile it and put it into /usr/bin
 // run the program before you use the text editor
 // e.g. cine nano /tmp/132/abc.txt  <-- This will create /tmp/132 directory if it doesn't exist
+// e.g. cine code /tmp/jjj <- create /tmp/jjj and open code at that directory
 package main
 
 import (
@@ -12,6 +13,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strings"
 )
 
 func main() {
@@ -42,7 +44,11 @@ func checkinput() (string, error) {
 	}
 	for i := 0; i < len(os.Args); i++ {
 		if reg.MatchString(os.Args[i]) {
-			path = filepath.Dir(os.Args[i])
+			if strings.Contains(os.Args[i], ".") {
+				path = filepath.Dir(os.Args[i])
+			} else {
+				path = os.Args[i]
+			}
 			break
 		}
 	}
