@@ -12,6 +12,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/exec"
 	"time"
 )
 
@@ -57,32 +58,79 @@ func receiveMessage(i input) {
 	}
 	l.SetReadBuffer(1500)
 	buffer := make([]byte, 1500)
-	for {
-		n, src, err := l.ReadFromIP(buffer)
-		if err != nil {
-			log.Fatal(err)
+	ch := make(chan bool, 2)
+	go func() {
+		for {
+			n, src, err := l.ReadFromIP(buffer)
+			if err != nil {
+				log.Fatal(err)
+			}
+			ch <- true
+			m := &finalMessage{}
+			json.Unmarshal(buffer[:n], &m)
+			if receivedMessage, ok := integrityCheck(m, i, src); ok {
+				preToggleServicesCheck(i.message, receivedMessage, false)
+			}
+			time.Sleep(time.Second * 5)
 		}
-		m := &finalMessage{}
-		json.Unmarshal(buffer[:n], &m)
-		if receivedMessage, ok := integrityCheck(m, i, src); ok {
-			toggleServices(i.message, receivedMessage)
+	}()
+	for {
+		select {
+		case <-ch:
+			//clear channel
+			for len(ch) > 0 {
+				<-ch
+			}
+
+		case <-time.After(time.Second * 10):
+			var dummyMessage message
+			preToggleServicesCheck(i.message, dummyMessage, true)
+
+		}
+		time.Sleep(time.Second * 5)
+	}
+}
+
+func preToggleServicesCheck(self message, neighbor message, force bool) {
+	if force {
+		go toggleServices(self.services, true)
+		return
+	}
+	if self.instance != neighbor.instance {
+		log.Println("Two servers have the different instance id. Stopping all services to prevent damages.")
+		go toggleServices(self.services, false)
+
+		return
+	}
+	if !sameStringSlice(self.services, neighbor.services) {
+		log.Println("Two servers have different services to monitor for. Stopping all services to prevent damages")
+		go toggleServices(self.services, false)
+
+		return
+	}
+	if self.priority < neighbor.priority {
+		go toggleServices(self.services, false)
+
+		return
+	}
+	go toggleServices(self.services, true)
+}
+
+func toggleServices(s []string, on bool) {
+	var action string
+	if on {
+		action = "start"
+	} else {
+		action = "stop"
+	}
+	for i := 0; i < len(s); i++ {
+		cmd := exec.Command("systemctl", action, s[i])
+		if err := cmd.Run(); err != nil {
+			log.Println(err)
 		}
 	}
 }
 
-func toggleServices(self message, neighbor message) {
-	if self.instance != neighbor.instance {
-		log.Println("Two servers have the different instance id. Can't decide what to do.")
-		return
-	}
-	if !sameStringSlice(self.services, neighbor.services) {
-		log.Println("Two servers have different services to monitor for. Can't decide what to do")
-		return
-	}
-	if self.priority < neighbor.priority {
-		return
-	}
-}
 func sameStringSlice(x, y []string) bool {
 	if len(x) != len(y) {
 		return false
@@ -201,7 +249,7 @@ func parseInput() (input, error) {
 		return i, fmt.Errorf("Missing arguments")
 	}
 	if os.Args[1] == "--help" || os.Args[1] == "help" || os.Args[1] == "-help" {
-		fmt.Printf("The purpose of the program is to provide high availability between systemd services on 2 linux servers\n -n, ip address and port of the neigbor e.g. 192.168.10.2:9000\n -l, ip address and port to listen on\n -p, priority of this machine\n, -i, instance id. Note that the instance id must be the same between 2 servers\n, -pass, password for encryption and authenication\n")
+		fmt.Printf("The purpose of the program is to provide high availability between systemd services on 2 linux servers\n\n -n, ip address and port of the neigbor e.g. 192.168.10.2:9000\n\n -l, ip address and port to listen on\n\n -p, priority of this machine\n\n -i, instance id. Note that the instance id must be the same between 2 servers\n\n -pass, password for encryption and authenication. Note that if the password is empty, no encryption would be done!\n\n -s, systemd services to toggle (could be multiple)\n")
 		os.Exit(0)
 	}
 	neighborIP := flag.String("n", "", "")
@@ -211,7 +259,7 @@ func parseInput() (input, error) {
 	password := flag.String("pass", "", "")
 	flag.Var(&services, "s", "")
 	flag.Parse()
-	if len(*neighborIP) == 0 || len(*listenIP) == 0 || *priority == -1 || *instanceID == -1 {
+	if len(*neighborIP) == 0 || len(*listenIP) == 0 || *priority == -1 || *instanceID == -1 || len(services) == 0 {
 		return i, fmt.Errorf("Missing arguments")
 	}
 	if len(*password) == 0 {
@@ -235,5 +283,5 @@ func parseInput() (input, error) {
 
 func errorHandler(e error) {
 	fmt.Println(e)
-	fmt.Printf("Try --help for more information")
+	fmt.Printf("Try --help for more information\n")
 }
