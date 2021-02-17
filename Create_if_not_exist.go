@@ -29,7 +29,7 @@ func main() {
 		for {
 			fmt.Printf("Select text editor\n [0] vscode\n [1] nano\n [2] vim\n")
 			fmt.Scanln(&i)
-			if i == 0 || i == 1 {
+			if i == 0 || i == 1 || i == 2 {
 				break loop
 			}
 		}
