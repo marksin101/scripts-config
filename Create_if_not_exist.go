@@ -41,6 +41,7 @@ func checkinput() (string, error) {
 	}
 	if len(os.Args) == 1 {
 		e = fmt.Errorf("Missing argument")
+		return path, e
 	}
 	for i := len(os.Args) - 1; 0 < i; i-- {
 		if reg.MatchString(os.Args[i]) {
