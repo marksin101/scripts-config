@@ -71,8 +71,8 @@ func receiveMessage(i input) {
 }
 
 func toggleServices(self message, neighbor message) {
-	if self.instance == neighbor.instance {
-		log.Println("Two servers have the same instance id. Can't decide what to do.")
+	if self.instance != neighbor.instance {
+		log.Println("Two servers have the different instance id. Can't decide what to do.")
 		return
 	}
 	if !sameStringSlice(self.services, neighbor.services) {
