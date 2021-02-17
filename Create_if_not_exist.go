@@ -17,11 +17,35 @@ import (
 )
 
 func main() {
+
 	path, err := checkinput()
 	if err != nil {
 		log.Fatal(err)
 	}
 	mkdir(path)
+	if len(os.Args) == 2 {
+		var i int
+	loop:
+		for {
+			fmt.Printf("Select text editor\n [0] vscode\n [1] nano\n [2] vim\n")
+			fmt.Scanln(&i)
+			if i == 0 || i == 1 {
+				break loop
+			}
+		}
+		if i == 0 {
+			os.Args = append([]string{"code"}, os.Args[1:]...)
+		}
+		if i == 1 {
+			os.Args = append([]string{"nano"}, os.Args[1:]...)
+
+		}
+		if i == 2 {
+			os.Args = append([]string{"vim"}, os.Args[1:]...)
+
+		}
+		os.Args = append([]string{"dummy"}, os.Args...)
+	}
 	cmd := exec.Command(os.Args[1], os.Args[2:]...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
