@@ -42,7 +42,7 @@ func checkinput() (string, error) {
 	if len(os.Args) == 1 {
 		e = fmt.Errorf("Missing argument")
 	}
-	for i := 0; i < len(os.Args); i++ {
+	for i := len(os.Args) - 1; 0 < i; i-- {
 		if reg.MatchString(os.Args[i]) {
 			if strings.Contains(os.Args[i], ".") {
 				path = filepath.Dir(os.Args[i])
