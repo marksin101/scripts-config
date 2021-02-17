@@ -48,6 +48,7 @@ func main() {
 		errorHandler(err)
 	}
 	go sendMessage(input)
+	receiveMessage(input)
 
 }
 
