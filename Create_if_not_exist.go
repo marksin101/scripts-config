@@ -1,9 +1,10 @@
 //Create if Not Exist (cine)
-// This is a simple program that would create directoryrecursively if it doesn't exist when you create a file
+// This is a simple program that would create directory recursively if it doesn't exist when you create a file
 // Usage: compile it and put it into /usr/bin
 // run the program before you use the text editor
 // e.g. cine nano /tmp/132/abc.txt  <-- This will create /tmp/132 directory if it doesn't exist
 // e.g. cine code /tmp/jjj <- create /tmp/jjj and open code at that directory
+// e.g. cine /tmp/lll <- if no text editor is present, a prompt would appear where you can choose one of the three text editors (vscode, nano and vim) 
 package main
 
 import (
@@ -34,18 +35,24 @@ func main() {
 				break loop
 			}
 		}
-		if i == 0 {
+		switch i {
+		case 0:
 			os.Args = append([]string{"code"}, os.Args[1:]...)
-		}
-		if i == 1 {
+		case 1:
 			os.Args = append([]string{"nano"}, os.Args[1:]...)
-
-		}
-		if i == 2 {
+		case 2:
 			os.Args = append([]string{"vim"}, os.Args[1:]...)
 
 		}
 		os.Args = append([]string{"dummy"}, os.Args...)
+		if i == 1 || i == 2 {
+			if !strings.Contains(os.Args[len(os.Args)-1], ".") {
+				var s string
+				fmt.Printf("File to be created:\n")
+				fmt.Scanln(&s)
+				os.Args[len(os.Args)-1] += "/" + s
+			}
+		}
 	}
 	cmd := exec.Command(os.Args[1], os.Args[2:]...)
 	cmd.Stdin = os.Stdin
