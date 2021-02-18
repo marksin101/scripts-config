@@ -27,6 +27,7 @@ func main() {
 		var i int
 	loop:
 		for {
+			fmt.Print("\033[H\033[2J")
 			fmt.Printf("Select text editor\n [0] vscode\n [1] nano\n [2] vim\n")
 			fmt.Scanln(&i)
 			if i == 0 || i == 1 || i == 2 {
