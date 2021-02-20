@@ -88,7 +88,6 @@ func checkinput() (string, error) {
 		os.Exit(0)
 	}
 	lastElementPrefix := string(os.Args[len(os.Args)-1][0])
-	fmt.Println(lastElementPrefix == "/")
 	if !(lastElementPrefix == "~" || lastElementPrefix == "/") {
 		current, _ := os.Getwd()
 		newPath := current + "/" + os.Args[len(os.Args)-1]
