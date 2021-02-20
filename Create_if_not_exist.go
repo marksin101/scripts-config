@@ -87,7 +87,33 @@ func checkinput() (string, error) {
 		printHelp()
 		os.Exit(0)
 	}
+	lastElementPrefix := string(os.Args[len(os.Args)-1][0])
+	fmt.Println(lastElementPrefix == "/")
+	if !(lastElementPrefix == "~" || lastElementPrefix == "/") {
+		current, _ := os.Getwd()
+		newPath := current + "/" + os.Args[len(os.Args)-1]
+		var r string
+		for {
+			fmt.Printf("Ambiguous path detected. Do you mean to create directory: %s. \n y/n:\n", newPath)
+			fmt.Scanln(&r)
+			if r == "y" || r == "yes" || r == "n" || r == "no" {
+				break
+			}
+
+		}
+		if strings.Contains(r, "y") {
+			os.Args[len(os.Args)-1] = newPath
+
+		} else {
+			var p string
+			fmt.Println("Enter the desired full path:")
+			fmt.Scanln(&p)
+			os.Args[len(os.Args)-1] = p
+		}
+	}
+
 	for i := len(os.Args) - 1; 0 < i; i-- {
+		fmt.Println(os.Args[i])
 		if reg.MatchString(os.Args[i]) {
 			if strings.Contains(os.Args[i], ".") {
 				path = filepath.Dir(os.Args[i])
