@@ -1,0 +1,31 @@
+
+{
+  "telemetry.enableCrashReporter": false,
+  "terminal.integrated.shell.linux": "/bin/bash",
+  "liveServer.settings.donotShowInfoMsg": true,
+  "editor.wordWrap": "on",
+  "files.autoSave": "off",
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "launch": {
+  
+    "configurations": [],
+    "compounds": []
+  },
+  "explorer.confirmDelete": false,
+  "go.useLanguageServer": true,
+  "[go]": {
+    "editor.insertSpaces": false,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    }
+  },
+  "go.formatTool": "gofmt",
+  "workbench.editorAssociations": [],
+  "window.zoomLevel": 0,
+  "python.languageServer": "Pylance"
+}
